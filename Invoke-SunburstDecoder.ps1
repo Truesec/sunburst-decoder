@@ -298,7 +298,10 @@ public class SunburstDomainDecoder
 }
 "@
 
-Add-Type -TypeDefinition $SunburstDefinition
+if (-not ([System.Management.Automation.PSTypeName]'SunburstDomainDecoder').Type)
+{
+    Add-Type -TypeDefinition $SunburstDefinition
+}
 $Sunburst = New-Object SunburstDomainDecoder
 
 
