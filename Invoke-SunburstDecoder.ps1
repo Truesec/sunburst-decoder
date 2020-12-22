@@ -76,12 +76,12 @@ public class SunburstDomainDecoder
 
     private static IEnumerable<string> StdInLines()
     {
-        string domain = Console.In.ReadLine()?.Trim();
+        string domain = Console.In.ReadLine().Trim();
         while (domain != null)
         {
             if (domain.Length > 0)
                 yield return domain;
-            domain = Console.In.ReadLine()?.Trim();
+            domain = Console.In.ReadLine().Trim();
         }
     }
 
@@ -134,7 +134,8 @@ public class SunburstDomainDecoder
                             base32EncodedSegments.Add(guidString, encodedDomain.Substring(2));
                             if (substitutionCipherSegments.ContainsKey(guidString))
                             {
-                                if (this.TryGetMergedBase32Domain(new[] { encodedDomain.Substring(2), substitutionCipherSegments[guidString] }, out string mergedDomain))
+                                string mergedDomain;
+                                if (this.TryGetMergedBase32Domain(new[] { encodedDomain.Substring(2), substitutionCipherSegments[guidString] }, out mergedDomain))
                                 {
                                     string previousDomain = mergedDomain.Substring(decodedDomain.Length);
                                     if (guidDomainDictionary.ContainsKey(guidString))
@@ -151,20 +152,21 @@ public class SunburstDomainDecoder
                         decodedDomain = this.DecodeDomainString(encodedDomain);
                         if (base32EncodedSegments.ContainsKey(guidString))
                         {
+                            string mergedDomain;
                             string previousSegments = base32EncodedSegments[guidString];
                             if (previousSegments.Contains(encodedDomain))
                             {
                                 decodedDomain = string.Empty;
                                 if (previousSegments.EndsWith(encodedDomain))
                                 {
-                                    if (this.TryGetMergedBase32Domain(new[] { previousSegments }, out string mergedDomain))
+                                    if (this.TryGetMergedBase32Domain(new[] { previousSegments }, out mergedDomain))
                                     {
                                         string firstDecodedDomainSegment = UTF8Encoding.UTF8.GetString(this.Base32DecodeBinary(previousSegments.Substring(0, previousSegments.Length - encodedDomain.Length)).ToArray());
                                         decodedDomain = mergedDomain.Substring(firstDecodedDomainSegment.Length);
                                     }
                                 }
                             }
-                            else if (this.TryGetMergedBase32Domain(new[] { previousSegments, encodedDomain }, out string mergedDomain))
+                            else if (this.TryGetMergedBase32Domain(new[] { previousSegments, encodedDomain }, out mergedDomain))
                             {
                                 decodedDomain = mergedDomain.Substring(UTF8Encoding.UTF8.GetString(this.Base32DecodeBinary(previousSegments).ToArray()).Length);
                                 base32EncodedSegments[guidString] = string.Join("", previousSegments, encodedDomain);
